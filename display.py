@@ -154,7 +154,7 @@ def render_price_chart(
     tickers: list[str],
     base_date: pd.Timestamp,
 ) -> None:
-    st.subheader("YTD Price Performance (Indexed to 100)")
+    st.subheader("YTD Price")
 
     # Filter to YTD only
     ytd_df = close_df[close_df.index >= base_date].copy()
@@ -162,19 +162,20 @@ def render_price_chart(
         st.info("No YTD data available for charting.")
         return
 
-    # Index to 100 at base date
-    base_row = ytd_df.iloc[0]
-    indexed = (ytd_df / base_row) * 100
+    # Clean index for Vega-Lite compatibility
+    ytd_df.index = pd.to_datetime(ytd_df.index)
+    ytd_df.index.name = None
 
     all_options = [benchmark] + tickers
-    selected = st.multiselect(
-        "Select tickers to plot",
+    selected = st.pills(
+        "Tickers",
         options=all_options,
         default=[benchmark],
+        selection_mode="multi",
     )
 
     if not selected:
         st.info("Select at least one ticker to display.")
         return
 
-    st.line_chart(indexed[selected])
+    st.line_chart(ytd_df[list(selected)])
