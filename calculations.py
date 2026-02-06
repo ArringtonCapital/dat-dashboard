@@ -26,21 +26,21 @@ def compute_rolling_correlations(
     dat_tickers: list[str],
     window: int = 60,
 ) -> pd.DataFrame:
-    """Compute Pearson (rolling) and Spearman correlations of daily returns.
+    """Compute Pearson (rolling) correlation of daily returns.
 
-    Returns DataFrame with columns: Ticker, Pearson Correlation, Spearman Correlation.
+    Returns DataFrame with columns: Ticker, Pearson Correlation.
     """
     daily_returns = close_df.pct_change().dropna()
 
     if benchmark_ticker not in daily_returns.columns:
-        return pd.DataFrame(columns=["Ticker", "Pearson Correlation", "Spearman Correlation"])
+        return pd.DataFrame(columns=["Ticker", "Pearson Correlation"])
 
     bench_returns = daily_returns[benchmark_ticker]
     rows = []
 
     for ticker in dat_tickers:
         if ticker not in daily_returns.columns:
-            rows.append({"Ticker": ticker, "Pearson Correlation": None, "Spearman Correlation": None})
+            rows.append({"Ticker": ticker, "Pearson Correlation": None})
             continue
 
         ticker_returns = daily_returns[ticker]
@@ -48,17 +48,15 @@ def compute_rolling_correlations(
         aligned = pd.concat([bench_returns, ticker_returns], axis=1).dropna()
 
         if len(aligned) < window:
-            rows.append({"Ticker": ticker, "Pearson Correlation": None, "Spearman Correlation": None})
+            rows.append({"Ticker": ticker, "Pearson Correlation": None})
             continue
 
         recent = aligned.iloc[-window:]
         pearson = recent.iloc[:, 0].corr(recent.iloc[:, 1], method="pearson")
-        spearman = recent.iloc[:, 0].corr(recent.iloc[:, 1], method="spearman")
 
         rows.append({
             "Ticker": ticker,
             "Pearson Correlation": pearson,
-            "Spearman Correlation": spearman,
         })
 
     return pd.DataFrame(rows)

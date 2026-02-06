@@ -1,20 +1,24 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 import yfinance as yf
+
+PARQUET_PATH = Path(__file__).parent / "data" / "hourly_prices.parquet"
 
 
 @st.cache_data(ttl=300, show_spinner="Fetching market data...")
 def fetch_price_data(
     tickers: tuple[str, ...], start_date: str
 ) -> tuple[pd.DataFrame, datetime]:
-    """Download adjusted close prices from Yahoo Finance.
+    """Download adjusted close prices from Yahoo Finance (daily).
 
     Returns (close_df, fetch_timestamp). close_df has DatetimeIndex rows and
     ticker columns. Uses auto_adjust so 'Close' is already adjusted.
+    Used for correlations which need 60+ trading days of daily data.
     """
     raw = yf.download(
         list(tickers),
@@ -34,6 +38,62 @@ def fetch_price_data(
         close_df = raw["Close"]
 
     return close_df, datetime.now()
+
+
+@st.cache_data(ttl=300, show_spinner="Fetching hourly data...")
+def fetch_hourly_data(
+    tickers: tuple[str, ...], start_date: str
+) -> tuple[pd.DataFrame, datetime]:
+    """Load stored hourly parquet + fetch recent hourly data, merge both.
+
+    The parquet file provides full YTD history (accumulated by GitHub Action).
+    Fresh yfinance call provides the most recent hours. Overlap of 5 days
+    ensures no gaps; duplicates are dropped keeping the freshest value.
+
+    Returns (hourly_df, fetch_timestamp).
+    """
+    frames: list[pd.DataFrame] = []
+
+    # Load stored parquet history
+    if PARQUET_PATH.exists():
+        stored = pd.read_parquet(PARQUET_PATH)
+        if stored.index.tz is not None:
+            stored.index = stored.index.tz_localize(None)
+        # Filter to only requested tickers (columns that exist)
+        available = [t for t in tickers if t in stored.columns]
+        if available:
+            frames.append(stored[available])
+
+    # Fetch recent hourly from yfinance (last 5 days for overlap)
+    raw = yf.download(
+        list(tickers),
+        period="5d",
+        interval="1h",
+        auto_adjust=True,
+        threads=True,
+        progress=False,
+    )
+    if not raw.empty:
+        if len(tickers) == 1:
+            fresh = raw[["Close"]].rename(columns={"Close": tickers[0]})
+        else:
+            fresh = raw["Close"]
+        fresh.index = pd.to_datetime(fresh.index)
+        if fresh.index.tz is not None:
+            fresh.index = fresh.index.tz_localize(None)
+        frames.append(fresh)
+
+    if not frames:
+        return pd.DataFrame(), datetime.now()
+
+    combined = pd.concat(frames)
+    combined = combined[~combined.index.duplicated(keep="last")]
+    combined = combined.sort_index()
+
+    # Filter to start_date onward
+    combined = combined[combined.index >= pd.Timestamp(start_date)]
+
+    return combined, datetime.now()
 
 
 def get_base_prices(close_df: pd.DataFrame, base_date: date) -> pd.Series:
