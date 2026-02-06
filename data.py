@@ -50,6 +50,11 @@ def get_base_prices(close_df: pd.DataFrame, base_date: date) -> pd.Series:
     return close_df.loc[last_valid_date]
 
 
-def get_data_start_date(base_date: date) -> str:
-    """Return a start date 10 days before base_date to buffer for holidays."""
-    return (base_date - timedelta(days=10)).isoformat()
+def get_data_start_date(base_date: date, correlation_window: int = 60) -> str:
+    """Return a start date far enough back for the correlation window.
+
+    Need correlation_window trading days before base_date, plus buffer.
+    Roughly 1.5x calendar days per trading day, plus 10-day holiday buffer.
+    """
+    calendar_days = int(correlation_window * 1.5) + 10
+    return (base_date - timedelta(days=calendar_days)).isoformat()

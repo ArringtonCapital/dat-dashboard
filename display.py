@@ -107,7 +107,7 @@ def render_dat_table(
         .hide(axis="index")
     )
 
-    st.dataframe(styled, use_container_width=True, hide_index=True)
+    st.dataframe(styled, width="stretch", hide_index=True)
 
 
 def render_correlation_table(corr_df: pd.DataFrame) -> None:
@@ -125,4 +125,4 @@ def render_correlation_table(corr_df: pd.DataFrame) -> None:
         .background_gradient(cmap="RdYlGn", vmin=-1, vmax=1, subset=pd.IndexSlice[:, :])
     )
 
-    st.dataframe(styled, use_container_width=True)
+    st.dataframe(styled, width="stretch")

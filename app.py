@@ -30,7 +30,7 @@ else:
 st.title(config.name)
 
 # --- Fetch data ---
-start_date = get_data_start_date(config.ytd_base_date)
+start_date = get_data_start_date(config.ytd_base_date, config.correlation_window)
 close_df, fetch_ts = fetch_price_data(config.all_tickers, start_date)
 
 if close_df.empty:
