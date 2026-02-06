@@ -5,6 +5,7 @@ description = "Digital Asset Treasury (DAT) Performance Dashboard"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "matplotlib>=3.10.8",
     "numpy>=2.4.2",
     "pandas>=2.3.3",
     "streamlit>=1.54.0",
