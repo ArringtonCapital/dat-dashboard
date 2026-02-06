@@ -1,0 +1,7 @@
+{
+  "name": "Solana DAT Dashboard",
+  "benchmark": "BSOL",
+  "tickers": ["DFDV", "HSDT", "SLMT", "STSS", "UPXI", "FWDI"],
+  "ytd_base_date": "2025-12-31",
+  "correlation_window": 60
+}
