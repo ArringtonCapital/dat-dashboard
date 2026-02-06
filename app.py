@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 
 from calculations import (
@@ -7,7 +8,7 @@ from calculations import (
 )
 from config import list_configs, load_config
 from data import fetch_price_data, get_base_prices, get_data_start_date
-from display import render_benchmark_header, render_correlation_table, render_dat_table
+from display import render_benchmark_header, render_dat_table, render_price_chart
 
 # --- Page config ---
 st.set_page_config(page_title="DAT Dashboard", layout="wide")
@@ -51,6 +52,25 @@ corr_df = compute_rolling_correlations(
 # --- Render ---
 render_benchmark_header(config.benchmark, base_prices, current_prices, ytd_returns)
 st.divider()
-render_dat_table(list(config.tickers), base_prices, current_prices, ytd_returns, relative_returns)
-st.divider()
-render_correlation_table(corr_df)
+
+col_left, col_right = st.columns([3, 2])
+
+with col_left:
+    render_dat_table(
+        list(config.tickers),
+        config.benchmark,
+        base_prices,
+        current_prices,
+        ytd_returns,
+        relative_returns,
+        corr_df,
+        config.correlation_window,
+    )
+
+with col_right:
+    render_price_chart(
+        close_df,
+        config.benchmark,
+        list(config.tickers),
+        pd.Timestamp(config.ytd_base_date),
+    )
