@@ -199,9 +199,10 @@ def render_price_chart(
         "Display", ["YTD Return (%)", "Price ($)"], horizontal=True, label_visibility="collapsed"
     )
 
-    plot_df = ytd_df[list(selected)]
+    plot_df = ytd_df[list(selected)].ffill()
     if mode == "YTD Return (%)":
-        plot_df = (plot_df / plot_df.iloc[0] - 1) * 100
+        first_valid = plot_df.bfill().iloc[0]
+        plot_df = (plot_df / first_valid - 1) * 100
         value_name = "Return (%)"
     else:
         value_name = "Price ($)"
