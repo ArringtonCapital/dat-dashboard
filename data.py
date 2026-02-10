@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
@@ -29,7 +30,7 @@ def fetch_price_data(
     )
 
     if raw.empty:
-        return pd.DataFrame(), datetime.now()
+        return pd.DataFrame(), datetime.now(ZoneInfo("America/New_York"))
 
     # yfinance returns flat columns for a single ticker, MultiIndex for multiple
     if len(tickers) == 1:
@@ -37,7 +38,7 @@ def fetch_price_data(
     else:
         close_df = raw["Close"]
 
-    return close_df, datetime.now()
+    return close_df, datetime.now(ZoneInfo("America/New_York"))
 
 
 @st.cache_data(ttl=300, show_spinner="Fetching hourly data...")
@@ -84,7 +85,7 @@ def fetch_hourly_data(
         frames.append(fresh)
 
     if not frames:
-        return pd.DataFrame(), datetime.now()
+        return pd.DataFrame(), datetime.now(ZoneInfo("America/New_York"))
 
     combined = pd.concat(frames)
     combined = combined[~combined.index.duplicated(keep="last")]
@@ -93,7 +94,7 @@ def fetch_hourly_data(
     # Filter to start_date onward
     combined = combined[combined.index >= pd.Timestamp(start_date)]
 
-    return combined, datetime.now()
+    return combined, datetime.now(ZoneInfo("America/New_York"))
 
 
 def get_base_prices(close_df: pd.DataFrame, base_date: date) -> pd.Series:

@@ -81,7 +81,7 @@ if close_df.empty:
     st.error("Failed to fetch market data from Yahoo Finance. Please try again later.")
     st.stop()
 
-st.caption(f"Last updated: {hourly_ts:%Y-%m-%d %H:%M:%S}")
+st.caption(f"Last updated: {hourly_ts:%Y-%m-%d %H:%M:%S} ET")
 
 # --- Compute ---
 base_prices = get_base_prices(close_df, config.ytd_base_date)
