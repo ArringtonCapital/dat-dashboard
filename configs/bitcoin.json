@@ -1,5 +1,6 @@
 {
   "name": "Bitcoin DAT Dashboard",
+  "logo": "assets/btc.png",
   "benchmark": "IBIT",
   "tickers": ["MSTR", "MTPLF", "XXI", "ASST", "NAKA", "BRR"],
   "ytd_base_date": "2025-12-31",

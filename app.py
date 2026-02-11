@@ -1,3 +1,6 @@
+import base64
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
@@ -58,12 +61,20 @@ if len(configs) == 0:
     st.stop()
 
 st.title("DAT Dashboard")
-tab_names = [name.replace(" DAT Dashboard", "") for name, _ in configs]
+loaded_configs = [(name.replace(" DAT Dashboard", ""), load_config(path)) for name, path in configs]
+
+
+def _logo_data_uri(logo_path: str) -> str:
+    data = Path(logo_path).read_bytes()
+    b64 = base64.b64encode(data).decode()
+    return f"data:image/png;base64,{b64}"
+
+
+tab_names = [f"![logo]({_logo_data_uri(c.logo)}) {name}" for name, c in loaded_configs]
 tabs = st.tabs(tab_names)
 
-for tab, (_, config_path) in zip(tabs, configs):
+for tab, (_, config) in zip(tabs, loaded_configs):
     with tab:
-        config = load_config(config_path)
 
         # --- Fetch data ---
         daily_start = get_data_start_date(config.ytd_base_date, config.correlation_window)

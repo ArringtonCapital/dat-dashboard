@@ -11,6 +11,7 @@ CONFIGS_DIR = Path(__file__).parent / "configs"
 @dataclass(frozen=True)
 class DashboardConfig:
     name: str
+    logo: str
     benchmark: str
     tickers: tuple[str, ...]
     ytd_base_date: date
@@ -33,6 +34,7 @@ def load_config(path: str | Path) -> DashboardConfig:
         raw = json.load(f)
     return DashboardConfig(
         name=raw["name"],
+        logo=raw["logo"],
         benchmark=raw["benchmark"],
         tickers=tuple(raw["tickers"]),
         ytd_base_date=date.fromisoformat(raw["ytd_base_date"]),
