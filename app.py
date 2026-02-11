@@ -17,7 +17,7 @@ CUSTOM_CSS = """
 <style>
     /* Reclaim wasted top padding + cap width */
     .stMainBlockContainer {
-        padding-top: 1.5rem;
+        padding-top: 3rem;
         max-width: 1400px;
         margin-left: auto;
         margin-right: auto;
@@ -56,72 +56,66 @@ configs = list_configs()
 if len(configs) == 0:
     st.error("No config files found in configs/ directory.")
     st.stop()
-elif len(configs) == 1:
-    config = load_config(configs[0][1])
-else:
-    selected = st.sidebar.selectbox(
-        "Select Dashboard",
-        options=range(len(configs)),
-        format_func=lambda i: configs[i][0],
-    )
-    config = load_config(configs[selected][1])
 
-st.title(config.name)
+st.title("DAT Dashboard")
+tab_names = [name.replace(" DAT Dashboard", "") for name, _ in configs]
+tabs = st.tabs(tab_names)
 
-# --- Fetch data ---
-# Daily data: used for correlations (needs 60+ trading days)
-daily_start = get_data_start_date(config.ytd_base_date, config.correlation_window)
-close_df, _ = fetch_price_data(config.all_tickers, daily_start)
+for tab, (_, config_path) in zip(tabs, configs):
+    with tab:
+        config = load_config(config_path)
 
-# Hourly data: used for YTD chart and fresher current prices
-hourly_start = config.ytd_base_date.isoformat()
-hourly_df, hourly_ts = fetch_hourly_data(config.all_tickers, hourly_start)
+        # --- Fetch data ---
+        daily_start = get_data_start_date(config.ytd_base_date, config.correlation_window)
+        close_df, _ = fetch_price_data(config.all_tickers, daily_start)
 
-if close_df.empty:
-    st.error("Failed to fetch market data from Yahoo Finance. Please try again later.")
-    st.stop()
+        hourly_start = config.ytd_base_date.isoformat()
+        hourly_df, hourly_ts = fetch_hourly_data(config.all_tickers, hourly_start)
 
-st.caption(f"Last updated: {hourly_ts:%Y-%m-%d %H:%M:%S} ET")
+        if close_df.empty:
+            st.error("Failed to fetch market data from Yahoo Finance. Please try again later.")
+            continue
 
-# --- Compute ---
-base_prices = get_base_prices(close_df, config.ytd_base_date)
+        st.caption(f"Last updated: {hourly_ts:%Y-%m-%d %H:%M:%S} ET")
 
-# Use hourly last row for fresher current prices, fall back to daily
-if not hourly_df.empty:
-    current_prices = hourly_df.iloc[-1]
-else:
-    current_prices = close_df.iloc[-1]
+        # --- Compute ---
+        base_prices = get_base_prices(close_df, config.ytd_base_date)
 
-ytd_returns = compute_ytd_returns(current_prices, base_prices)
-relative_returns = compute_relative_returns(ytd_returns, config.benchmark)
-corr_df = compute_rolling_correlations(
-    close_df, config.benchmark, list(config.tickers), config.correlation_window
-)
+        if not hourly_df.empty:
+            current_prices = hourly_df.iloc[-1]
+        else:
+            current_prices = close_df.iloc[-1]
 
-# --- Render ---
-render_benchmark_header(config.benchmark, base_prices, current_prices, ytd_returns)
-st.divider()
+        ytd_returns = compute_ytd_returns(current_prices, base_prices)
+        relative_returns = compute_relative_returns(ytd_returns, config.benchmark)
+        corr_df = compute_rolling_correlations(
+            close_df, config.benchmark, list(config.tickers), config.correlation_window
+        )
 
-col_left, col_right = st.columns([5, 6])
+        # --- Render ---
+        render_benchmark_header(config.benchmark, base_prices, current_prices, ytd_returns)
+        st.divider()
 
-with col_left:
-    render_dat_table(
-        list(config.tickers),
-        config.benchmark,
-        base_prices,
-        current_prices,
-        ytd_returns,
-        relative_returns,
-        corr_df,
-        config.correlation_window,
-    )
+        col_left, col_right = st.columns([5, 6])
 
-with col_right:
-    # Use hourly data for the chart if available, otherwise fall back to daily
-    chart_df = hourly_df if not hourly_df.empty else close_df
-    render_price_chart(
-        chart_df,
-        config.benchmark,
-        list(config.tickers),
-        pd.Timestamp(config.ytd_base_date),
-    )
+        with col_left:
+            render_dat_table(
+                list(config.tickers),
+                config.benchmark,
+                base_prices,
+                current_prices,
+                ytd_returns,
+                relative_returns,
+                corr_df,
+                config.correlation_window,
+            )
+
+        with col_right:
+            chart_df = hourly_df if not hourly_df.empty else close_df
+            render_price_chart(
+                chart_df,
+                config.benchmark,
+                list(config.tickers),
+                pd.Timestamp(config.ytd_base_date),
+                key=config.benchmark,
+            )

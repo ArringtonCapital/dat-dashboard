@@ -167,6 +167,7 @@ def render_price_chart(
     benchmark: str,
     tickers: list[str],
     base_date: pd.Timestamp,
+    key: str = "",
 ) -> None:
     _section_header("YTD Price")
 
@@ -189,6 +190,7 @@ def render_price_chart(
         options=all_options,
         default=[benchmark],
         selection_mode="multi",
+        key=f"pills_{key}",
     )
 
     if not selected:
@@ -196,7 +198,8 @@ def render_price_chart(
         return
 
     mode = st.radio(
-        "Display", ["YTD Return (%)", "Price ($)"], horizontal=True, label_visibility="collapsed"
+        "Display", ["YTD Return (%)", "Price ($)"], horizontal=True, label_visibility="collapsed",
+        key=f"radio_{key}",
     )
 
     plot_df = ytd_df[list(selected)].ffill()
