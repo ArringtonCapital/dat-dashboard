@@ -93,9 +93,9 @@ for tab, (_, config) in zip(tabs, loaded_configs):
         base_prices = get_base_prices(close_df, config.ytd_base_date)
 
         if not hourly_df.empty:
-            current_prices = hourly_df.iloc[-1]
+            current_prices = hourly_df.ffill().iloc[-1]
         else:
-            current_prices = close_df.iloc[-1]
+            current_prices = close_df.ffill().iloc[-1]
 
         ytd_returns = compute_ytd_returns(current_prices, base_prices)
         relative_returns = compute_relative_returns(ytd_returns, config.benchmark)
