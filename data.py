@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import urllib.request
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -8,7 +10,23 @@ import pandas as pd
 import streamlit as st
 import yfinance as yf
 
+COINGECKO_BASE = "https://api.coingecko.com/api/v3"
+
 PARQUET_PATH = Path(__file__).parent / "data" / "hourly_prices.parquet"
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def fetch_coin_price(coin_type: str) -> float | None:
+    """Fetch live coin price from CoinGecko (5-min cache)."""
+    coin_id = {"bitcoin": "bitcoin", "ethereum": "ethereum", "solana": "solana"}[coin_type]
+    url = f"{COINGECKO_BASE}/simple/price?ids={coin_id}&vs_currencies=usd"
+    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode())
+        return data.get(coin_id, {}).get("usd")
+    except Exception:
+        return None
 
 
 @st.cache_data(ttl=300, show_spinner="Fetching market data...")

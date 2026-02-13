@@ -16,6 +16,8 @@ class DashboardConfig:
     tickers: tuple[str, ...]
     ytd_base_date: date
     correlation_window: int
+    coin_type: str  # "bitcoin", "ethereum", or "solana"
+    holdings: dict  # {ticker: {"coingecko_symbol": "..."}}
 
     @property
     def all_tickers(self) -> tuple[str, ...]:
@@ -39,6 +41,8 @@ def load_config(path: str | Path) -> DashboardConfig:
         tickers=tuple(raw["tickers"]),
         ytd_base_date=date.fromisoformat(raw["ytd_base_date"]),
         correlation_window=raw["correlation_window"],
+        coin_type=raw.get("coin_type", "bitcoin"),
+        holdings=raw.get("holdings", {}),
     )
 
 

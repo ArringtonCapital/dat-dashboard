@@ -1,0 +1,171 @@
+{
+  "last_updated": "2026-02-12T19:59:04Z",
+  "bitcoin": {
+    "coin_price_usd": 65889,
+    "last_updated": "2026-02-12T19:59:04Z",
+    "tickers": {
+      "MSTR": {
+        "coin_held": 714644.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 293998000,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 8236290048,
+        "total_cash": 2301469952
+      },
+      "MTPLF": {
+        "coin_held": 35102.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 1140000000,
+        "shares_type": "basic",
+        "shares_updated": "2026-02-12",
+        "total_debt": 4499999744,
+        "total_cash": 2774000128
+      },
+      "XXI": {
+        "coin_held": 43514.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 336979560,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": null,
+        "total_cash": null
+      },
+      "ASST": {
+        "coin_held": 13131.79,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 52480000,
+        "shares_type": "basic",
+        "shares_updated": "2026-02-12",
+        "total_debt": 3604000,
+        "total_cash": 109069000
+      },
+      "NAKA": {
+        "coin_held": 5398.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 672950000,
+        "shares_type": "basic",
+        "shares_updated": "2026-02-12",
+        "total_debt": 209013280,
+        "total_cash": 24185084
+      },
+      "BRR": {
+        "coin_held": 5000.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 92161588,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": null,
+        "total_cash": null
+      }
+    }
+  },
+  "ethereum": {
+    "coin_price_usd": 1928.01,
+    "last_updated": "2026-02-12T19:59:04Z",
+    "tickers": {
+      "BMNR": {
+        "coin_held": 4325738.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 325665565,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 0,
+        "total_cash": 887678016
+      },
+      "SBET": {
+        "coin_held": 864840.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 167172597,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 0,
+        "total_cash": 11128231
+      },
+      "ETHZ": {
+        "coin_held": 69802.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 12417757,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 546762304,
+        "total_cash": 53309508
+      }
+    }
+  },
+  "solana": {
+    "coin_price_usd": 77.71,
+    "last_updated": "2026-02-12T19:59:04Z",
+    "tickers": {
+      "DFDV": {
+        "coin_held": 2195926.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 31439000,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 131711000,
+        "total_cash": 10178000
+      },
+      "HSDT": {
+        "coin_held": 2300000.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 10724112,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 0,
+        "total_cash": 124051000
+      },
+      "SLMT": {
+        "coin_held": null,
+        "coin_held_updated": null,
+        "coin_held_source": "missing",
+        "shares_outstanding": 81994765,
+        "shares_type": "basic",
+        "shares_updated": "2026-02-12",
+        "total_debt": 2749312,
+        "total_cash": 658136
+      },
+      "STSS": {
+        "coin_held": 1997796.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 24341005,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 7628888,
+        "total_cash": 10521706
+      },
+      "UPXI": {
+        "coin_held": 2018419.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 60829603,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 213475920,
+        "total_cash": 1616765
+      },
+      "FWDI": {
+        "coin_held": 6910568.0,
+        "coin_held_updated": "2026-02-12",
+        "coin_held_source": "coingecko",
+        "shares_outstanding": 1113670,
+        "shares_type": "diluted",
+        "shares_updated": "2026-02-12",
+        "total_debt": 2545028,
+        "total_cash": 38166972
+      }
+    }
+  }
+}

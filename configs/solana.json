@@ -4,5 +4,14 @@
   "benchmark": "BSOL",
   "tickers": ["DFDV", "HSDT", "SLMT", "STSS", "UPXI", "FWDI"],
   "ytd_base_date": "2025-12-31",
-  "correlation_window": 60
+  "correlation_window": 60,
+  "coin_type": "solana",
+  "holdings": {
+    "DFDV": {"coingecko_symbol": "DFDV.US"},
+    "HSDT": {"coingecko_symbol": "HSDT.US"},
+    "SLMT": {"coingecko_symbol": "SLMT.US"},
+    "STSS": {"coingecko_symbol": "STSS.US"},
+    "UPXI": {"coingecko_symbol": "UPXI.US"},
+    "FWDI": {"coingecko_symbol": "FWDI.US"}
+  }
 }

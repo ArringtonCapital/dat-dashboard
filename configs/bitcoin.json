@@ -4,5 +4,14 @@
   "benchmark": "IBIT",
   "tickers": ["MSTR", "MTPLF", "XXI", "ASST", "NAKA", "BRR"],
   "ytd_base_date": "2025-12-31",
-  "correlation_window": 60
+  "correlation_window": 60,
+  "coin_type": "bitcoin",
+  "holdings": {
+    "MSTR": {"coingecko_symbol": "MSTR.US", "convertible_debt": 8214000000},
+    "MTPLF": {"coingecko_symbol": "3350.T", "shares_override": 1140000000, "shares_type_override": "basic"},
+    "XXI": {"coingecko_symbol": "XXI.US"},
+    "ASST": {"coingecko_symbol": "ASST.US", "shares_override": 52480000, "shares_type_override": "basic"},
+    "NAKA": {"coingecko_symbol": "NAKA.US", "shares_override": 672950000, "shares_type_override": "basic"},
+    "BRR": {"coingecko_symbol": "BRR.US"}
+  }
 }

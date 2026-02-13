@@ -10,8 +10,9 @@ from calculations import (
     compute_ytd_returns,
 )
 from config import list_configs, load_config
-from data import fetch_hourly_data, fetch_price_data, get_base_prices, get_data_start_date
-from display import render_benchmark_header, render_dat_table, render_price_chart
+from data import fetch_coin_price, fetch_hourly_data, fetch_price_data, get_base_prices, get_data_start_date
+from display import render_benchmark_header, render_dat_table, render_mnav_table, render_price_chart
+from holdings import compute_mnav, load_holdings
 
 # --- Page config ---
 st.set_page_config(page_title="DAT Dashboard", layout="wide")
@@ -130,3 +131,14 @@ for tab, (_, config) in zip(tabs, loaded_configs):
                 pd.Timestamp(config.ytd_base_date),
                 key=config.benchmark,
             )
+
+        # --- mNAV section ---
+        holdings_data = load_holdings(config.coin_type)
+        if holdings_data:
+            st.divider()
+            live_coin_price = fetch_coin_price(config.coin_type)
+            mnav_df = compute_mnav(
+                holdings_data, list(config.tickers), current_prices,
+                config.holdings, coin_price_override=live_coin_price,
+            )
+            render_mnav_table(mnav_df, config.coin_type)

@@ -242,3 +242,127 @@ def render_price_chart(
 
     with chart_slot:
         st.altair_chart(chart, width="stretch", theme=None)
+
+
+def _fmt_mnav(v: float | None) -> str:
+    if v is None or pd.isna(v):
+        return "N/A"
+    return f"{v:.2f}x"
+
+
+def _fmt_coin_held(v: float | None, coin_type: str) -> str:
+    if v is None or pd.isna(v):
+        return "N/A"
+    label = {"bitcoin": "BTC", "ethereum": "ETH", "solana": "SOL"}.get(coin_type, "")
+    return f"{v:,.0f} {label}"
+
+
+def _fmt_shares(v: int | None, shares_type: str) -> str:
+    if v is None or pd.isna(v):
+        return "N/A"
+    if v >= 1_000_000_000:
+        formatted = f"{v / 1_000_000_000:.2f}B"
+    elif v >= 1_000_000:
+        formatted = f"{v / 1_000_000:.0f}M"
+    else:
+        formatted = f"{v:,}"
+    suffix = "*" if shares_type in ("basic", "manual") else ""
+    return f"{formatted} ({shares_type}{suffix})"
+
+
+def _color_mnav(v: str) -> str:
+    if v == "N/A":
+        return ""
+    try:
+        num = float(v.replace("x", ""))
+    except (ValueError, AttributeError):
+        return ""
+    if num < 1.0:
+        return "background-color: #28a745; color: white; font-weight: bold"
+    elif num > 1.0:
+        return "background-color: #dc3545; color: white; font-weight: bold"
+    return ""
+
+
+def _fmt_usd_compact(v: float | None) -> str:
+    if v is None or pd.isna(v):
+        return "N/A"
+    abs_v = abs(v)
+    if abs_v >= 1_000_000_000:
+        formatted = f"${abs_v / 1_000_000_000:.1f}B"
+    elif abs_v >= 1_000_000:
+        formatted = f"${abs_v / 1_000_000:.0f}M"
+    elif abs_v > 0:
+        formatted = f"${abs_v:,.0f}"
+    else:
+        return "$0"
+    return f"-{formatted}" if v < 0 else formatted
+
+
+def _fmt_conv_debt(v: float | None) -> str:
+    if v is None or pd.isna(v):
+        return "--"
+    return f"{_fmt_usd_compact(v)} (config)"
+
+
+def _fmt_non_conv_debt(v: float | None) -> str:
+    if v is None or pd.isna(v):
+        return "$0"
+    if v == 0:
+        return "$0"
+    return _fmt_usd_compact(v)
+
+
+def render_mnav_table(mnav_df: pd.DataFrame, coin_type: str) -> None:
+    """Render the mNAV overview table with full formula audit columns.
+
+    mnav_df has columns: Ticker, mNAV, Coin Held, Coin Source, Shares,
+                         Shares Type, Stock Price, Cash, Conv Debt,
+                         Non-Conv Debt, Coin Price, Holdings Updated
+    """
+    _section_header("mNAV Overview")
+
+    if mnav_df.empty:
+        st.info("No holdings data available. Run scripts/update_holdings.py to fetch data.")
+        return
+
+    coin_label = {"bitcoin": "BTC", "ethereum": "ETH", "solana": "SOL"}.get(coin_type, "")
+
+    rows = []
+    for _, r in mnav_df.iterrows():
+        rows.append({
+            "Ticker": r["Ticker"],
+            "mNAV": _fmt_mnav(r["mNAV"]),
+            "Coin Held": _fmt_coin_held(r["Coin Held"], coin_type),
+            f"{coin_label} Price": _fmt_price(r["Coin Price"]),
+            "Shares": _fmt_shares(r["Shares"], r["Shares Type"]),
+            "Stock Price": _fmt_price(r["Stock Price"]),
+            "Cash": _fmt_usd_compact(r.get("Cash")),
+            "Conv Debt": _fmt_conv_debt(r.get("Conv Debt")),
+            "Non-Conv Debt": _fmt_non_conv_debt(r.get("Non-Conv Debt")),
+            "Updated": r["Holdings Updated"] or "N/A",
+        })
+
+    df = pd.DataFrame(rows)
+
+    # Sort by mNAV descending (highest premium first)
+    def _sort_key(val: str) -> float:
+        if val == "N/A":
+            return float("-inf")
+        try:
+            return float(val.replace("x", ""))
+        except (ValueError, AttributeError):
+            return float("-inf")
+
+    df["_sort"] = df["mNAV"].map(_sort_key)
+    df = df.sort_values("_sort", ascending=False).drop(columns="_sort").reset_index(drop=True)
+
+    styled = df.style.map(_color_mnav, subset=["mNAV"]).hide(axis="index")
+    st.dataframe(styled, width="stretch", hide_index=True)
+
+    st.caption(
+        "mNAV = (Shares x Stock Price) / (Coin Held x Coin Price + Cash - Non-Conv Debt). "
+        "Shares: diluted where available, \\*basic otherwise. "
+        "Conv Debt marked (config) is hard-coded; update in configs/*.json. "
+        "Note: Strategy.com reports EV-based mNAV which adds debt to the numerator."
+    )

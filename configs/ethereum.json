@@ -4,5 +4,11 @@
   "benchmark": "ETHA",
   "tickers": ["BMNR", "SBET", "ETHZ"],
   "ytd_base_date": "2025-12-31",
-  "correlation_window": 60
+  "correlation_window": 60,
+  "coin_type": "ethereum",
+  "holdings": {
+    "BMNR": {"coingecko_symbol": "BMNR.US"},
+    "SBET": {"coingecko_symbol": "SBET.US"},
+    "ETHZ": {"coingecko_symbol": "ETHZ.US"}
+  }
 }
