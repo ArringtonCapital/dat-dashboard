@@ -30,7 +30,7 @@ def compute_rolling_correlations(
 
     Returns DataFrame with columns: Ticker, Pearson Correlation.
     """
-    daily_returns = close_df.pct_change().dropna()
+    daily_returns = close_df.pct_change(fill_method=None).iloc[1:]
 
     if benchmark_ticker not in daily_returns.columns:
         return pd.DataFrame(columns=["Ticker", "Pearson Correlation"])

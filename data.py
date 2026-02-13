@@ -38,6 +38,15 @@ def fetch_price_data(
     else:
         close_df = raw["Close"]
 
+    # Retry tickers that came back all-NaN (yfinance bulk download can fail silently)
+    failed = [t for t in tickers if t in close_df.columns and close_df[t].isna().all()]
+    for t in failed:
+        single = yf.download(
+            t, start=start_date, auto_adjust=True, progress=False
+        )
+        if not single.empty:
+            close_df[t] = single["Close"]
+
     return close_df, datetime.now(ZoneInfo("America/New_York"))
 
 
